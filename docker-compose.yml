@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: melodydesk-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: melodydesk
+      POSTGRES_USER: melodydesk
+      POSTGRES_PASSWORD: local_development_password
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - melodydesk_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U melodydesk -d melodydesk"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  melodydesk_postgres_data:
