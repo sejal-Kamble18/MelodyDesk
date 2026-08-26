@@ -26,8 +26,8 @@ export const SettingsPage = () => {
       <SectionHeader
         eyebrow="Settings"
         title="Timer and playback preferences"
-        description="These controls map to the preferences table from the Notion architecture and persist locally until the API is connected."
-        action={<span className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm font-bold text-zinc-300">Saved locally</span>}
+        description="These controls sync to Supabase when you are signed in and stay available locally while offline."
+        action={<span className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm font-bold text-zinc-300">Supabase-backed</span>}
       />
 
       <section className="rounded-lg border border-white/10 bg-[#181818] p-5">
@@ -75,12 +75,12 @@ export const SettingsPage = () => {
       <section className="rounded-[22px] border border-white/8 bg-[#111113] p-5">
         <h2 className="text-xl font-black text-white">Connected Music Services</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-          Spotify OAuth should be handled by the FastAPI backend. MelodyDesk stores provider references and playback-safe status only.
+          SoundCloud search and stream selection are handled by FastAPI with server-side credentials. MelodyDesk stores provider references and playback-safe status only.
         </p>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
           {[
-            ['Spotify connection', spotifyConnected ? 'Connected' : 'Disconnected'],
-            ['Playback eligibility', spotifyPremium ? 'Premium ready' : 'Premium required'],
+            ['SoundCloud API', spotifyConnected ? 'Configured' : 'Credential pending'],
+            ['Playback eligibility', spotifyPremium ? 'Playable stream ready' : 'Provider authorization required'],
             ['Stored content', 'References only'],
           ].map(([label, value]) => (
             <div key={label} className="rounded-[18px] bg-white/[0.05] p-4">
@@ -91,7 +91,7 @@ export const SettingsPage = () => {
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
           <Button onClick={toggleSpotifyConnection} variant={spotifyConnected ? 'secondary' : 'primary'}>
-            {spotifyConnected ? 'Disconnect Spotify' : 'Connect Spotify'}
+            {spotifyConnected ? 'Mark SoundCloud disconnected' : 'Mark SoundCloud configured'}
           </Button>
           <Button onClick={toggleSpotifyPremium} variant="secondary">
             {spotifyPremium ? 'Disable Premium state' : 'Enable Premium state'}

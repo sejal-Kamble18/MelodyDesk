@@ -3,10 +3,15 @@ import { cn } from '../../utils/cn';
 interface ArtworkProps {
   label: string;
   palette: string;
+  imageUrl?: string;
   className?: string;
 }
 
-export const Artwork = ({ label, palette, className }: ArtworkProps) => {
+export const Artwork = ({ label, palette, imageUrl, className }: ArtworkProps) => {
+  if (imageUrl) {
+    return <img alt="" className={cn('rounded-[18px] object-cover shadow-[0_24px_70px_rgba(0,0,0,0.36)]', className)} src={imageUrl} />;
+  }
+
   return (
     <div className={cn('relative overflow-hidden rounded-[18px] bg-gradient-to-br shadow-[0_24px_70px_rgba(0,0,0,0.36)]', palette, className)}>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,255,255,0.55),transparent_22%),linear-gradient(135deg,transparent,rgba(0,0,0,0.54))]" />

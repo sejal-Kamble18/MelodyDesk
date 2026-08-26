@@ -20,9 +20,15 @@ const greeting = () => {
 
 export const HomePage = () => {
   const user = useAuthStore((state) => state.user);
-  const activeSession = useSessionStore((state) => state.activeSession);
+  const { activeSession, history, syncError } = useSessionStore();
   const { currentTrack, playTrack } = usePlayerStore();
   const heroPlaylist = demoPlaylists[0];
+  const todayMinutes = history
+    .filter((session) => session.completedAt === 'Today' || (session.completedAtIso && new Date(session.completedAtIso).toDateString() === new Date().toDateString()))
+    .reduce((sum, session) => sum + session.completedMinutes, 0);
+  const dailyTarget = 240;
+  const dailyProgress = Math.min(100, Math.round((todayMinutes / dailyTarget) * 100));
+  const remainingMinutes = Math.max(0, dailyTarget - todayMinutes);
 
   return (
     <div className="space-y-10">
@@ -54,6 +60,7 @@ export const HomePage = () => {
                 </Button>
               ) : null}
             </div>
+            {syncError ? <p className="mt-4 text-sm text-amber-200">{syncError}</p> : null}
           </div>
           <div className="rounded-[24px] border border-white/10 bg-black/25 p-4 backdrop-blur">
             <Artwork label={currentTrack.artwork} palette={currentTrack.palette} className="aspect-square w-full" />
@@ -72,17 +79,17 @@ export const HomePage = () => {
             <Clock3 className="text-[#22e26b]" size={22} />
             <h2 className="text-lg font-black text-white">Daily focus goal</h2>
           </div>
-          <p className="mt-4 text-3xl font-black text-white">3h 05m</p>
-          <ProgressBar value={77} className="mt-4" />
-          <p className="mt-3 text-sm text-zinc-400">55 minutes left to close today.</p>
+          <p className="mt-4 text-3xl font-black text-white">{Math.floor(todayMinutes / 60)}h {todayMinutes % 60}m</p>
+          <ProgressBar value={dailyProgress} className="mt-4" />
+          <p className="mt-3 text-sm text-zinc-400">{remainingMinutes ? `${remainingMinutes} minutes left to close today.` : 'Daily goal complete.'}</p>
         </section>
         <section className="rounded-[22px] border border-white/8 bg-[#111113] p-5">
           <div className="flex items-center gap-3">
             <Flame className="text-amber-300" size={22} />
             <h2 className="text-lg font-black text-white">Current streak</h2>
           </div>
-          <p className="mt-4 text-3xl font-black text-white">6 days</p>
-          <p className="mt-3 text-sm text-zinc-400">Best run: 18 days. Keep the chain warm.</p>
+          <p className="mt-4 text-3xl font-black text-white">{history.length}</p>
+          <p className="mt-3 text-sm text-zinc-400">Completed sessions saved to your account.</p>
         </section>
         <section className="rounded-[22px] border border-white/8 bg-[#111113] p-5">
           <div className="flex items-center gap-3">

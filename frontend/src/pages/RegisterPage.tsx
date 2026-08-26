@@ -23,8 +23,8 @@ export const RegisterPage = () => {
   const onSubmit = async (values: RegisterPayload) => {
     setError(null);
     try {
-      await registerUser(values.name, values.email, values.password, values.organization);
-      navigate('/');
+      const result = await registerUser(values.name, values.email, values.password);
+      navigate(result.needsEmailVerification ? '/verify-email' : '/', { state: { email: values.email } });
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'We could not create your account. Please try again.');
     }
@@ -46,7 +46,6 @@ export const RegisterPage = () => {
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <Input label="Name" type="text" placeholder="Ava Chen" autoComplete="name" error={errors.name?.message} {...register('name')} />
         <Input label="Email" type="email" placeholder="name@example.com" autoComplete="email" error={errors.email?.message} {...register('email')} />
-        <Input label="Organization" type="text" placeholder="MelodyDesk Studio" autoComplete="organization" error={errors.organization?.message} {...register('organization')} />
         <Input label="Password" type="password" placeholder="password" autoComplete="new-password" error={errors.password?.message} {...register('password')} />
 
         {error ? <p className="text-sm text-rose-300">{error}</p> : null}

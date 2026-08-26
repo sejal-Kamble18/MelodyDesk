@@ -7,7 +7,7 @@ interface GoalCardProps {
 }
 
 export const GoalCard = ({ goal }: GoalCardProps) => {
-  const progress = Math.round((goal.completedMinutes / goal.targetMinutes) * 100);
+  const progress = Math.min(100, Math.round((goal.completedMinutes / goal.targetMinutes) * 100));
 
   return (
     <Card>

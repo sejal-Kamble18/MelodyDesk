@@ -20,6 +20,7 @@ const ActiveSessionPage = lazy(() => import('../pages/ActiveSessionPage').then((
 const HistoryPage = lazy(() => import('../pages/HistoryPage').then((module) => ({ default: module.HistoryPage })));
 const AnalyticsPage = lazy(() => import('../pages/AnalyticsPage').then((module) => ({ default: module.AnalyticsPage })));
 const GoalsPage = lazy(() => import('../pages/GoalsPage').then((module) => ({ default: module.GoalsPage })));
+const StudyRoomsPage = lazy(() => import('../pages/StudyRoomsPage').then((module) => ({ default: module.StudyRoomsPage })));
 const ProfilePage = lazy(() => import('../pages/ProfilePage').then((module) => ({ default: module.ProfilePage })));
 const SettingsPage = lazy(() => import('../pages/SettingsPage').then((module) => ({ default: module.SettingsPage })));
 const LegalPage = lazy(() => import('../pages/LegalPage').then((module) => ({ default: module.LegalPage })));
@@ -58,7 +59,7 @@ export const AppRoutes = () => {
         <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
         <Route path="/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
         <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPasswordPage /></PublicOnlyRoute>} />
-        <Route path="/reset-password" element={<PublicOnlyRoute><ResetPasswordPage /></PublicOnlyRoute>} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/verify-email" element={<PublicOnlyRoute><VerifyEmailPage /></PublicOnlyRoute>} />
         <Route path="/privacy" element={<LegalPage kind="privacy" />} />
         <Route path="/terms" element={<LegalPage kind="terms" />} />
@@ -75,6 +76,7 @@ export const AppRoutes = () => {
         <Route path="/history" element={<ProtectedPage><HistoryPage /></ProtectedPage>} />
         <Route path="/analytics" element={<ProtectedPage><AnalyticsPage /></ProtectedPage>} />
         <Route path="/goals" element={<ProtectedPage><GoalsPage /></ProtectedPage>} />
+        <Route path="/rooms" element={<ProtectedPage><StudyRoomsPage /></ProtectedPage>} />
         <Route path="/settings" element={<ProtectedPage><SettingsPage /></ProtectedPage>} />
         <Route path="/profile" element={<ProtectedPage><ProfilePage /></ProtectedPage>} />
         <Route path="/connected-accounts" element={<Navigate to="/settings" replace />} />

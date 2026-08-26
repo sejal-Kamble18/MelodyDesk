@@ -17,6 +17,7 @@ import {
   Settings,
   Timer,
   User,
+  UsersRound,
 } from 'lucide-react';
 import { MusicPlayer } from '../product/MusicPlayer';
 import { IconButton } from '../common/IconButton';
@@ -34,6 +35,7 @@ const navItems = [
   { to: '/history', label: 'History', icon: History },
   { to: '/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/goals', label: 'Goals', icon: Goal },
+  { to: '/rooms', label: 'Study Rooms', icon: UsersRound },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
