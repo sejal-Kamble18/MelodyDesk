@@ -62,6 +62,7 @@ export type FocusSession = {
   completedMinutes: number;
   status: 'completed' | 'finished-early' | 'active';
   completedAt: string;
+  completedAtIso?: string;
 };
 
 export type Goal = {

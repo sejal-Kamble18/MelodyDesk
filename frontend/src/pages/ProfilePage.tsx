@@ -6,7 +6,7 @@ export const ProfilePage = () => {
 
   return (
     <div className="space-y-8">
-      <SectionHeader eyebrow="Profile" title="Your MelodyDesk account" description="Account details are ready for the backend user profile endpoint." />
+      <SectionHeader eyebrow="Profile" title="Your MelodyDesk account" description="Account identity is restored from Supabase Auth and mirrored into the profiles table." />
       <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr]">
         <div className="rounded-lg border border-white/10 bg-[#181818] p-5">
           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#1ed760] text-3xl font-black text-black">
@@ -20,9 +20,8 @@ export const ProfilePage = () => {
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {[
               ['Role', user?.role ?? 'Focus Builder'],
-              ['Organization', user?.organization ?? 'MelodyDesk'],
-              ['Email verification', 'Pending backend verification'],
-              ['Account sync', 'Local demo state active'],
+              ['Email verification', user?.isVerified ? 'Verified' : 'Pending verification'],
+              ['Account sync', 'Supabase Auth active'],
             ].map(([label, value]) => (
               <div key={label} className="rounded-md bg-black/35 p-4">
                 <p className="text-sm text-slate-400">{label}</p>

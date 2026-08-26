@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { defaultPreferences, sessions } from '../data/melodydesk';
+import { defaultPreferences } from '../data/melodydesk';
+import { loadFocusSessions, loadPreferences, saveFocusSession, savePreferences } from '../services/sessionService';
 import type { ActivityId, FocusSession, MusicSource, Preferences, SessionMode } from '../types/product';
 
 export type SessionDraft = {
@@ -34,9 +35,12 @@ interface SessionState {
   activeSession: ActiveSession | null;
   history: FocusSession[];
   preferences: Preferences;
+  syncError: string | null;
   spotifyConnected: boolean;
   spotifyPremium: boolean;
   setDraft: (draft: Partial<SessionDraft>) => void;
+  loadRemoteData: () => Promise<void>;
+  clearUserData: () => void;
   startSession: () => void;
   pauseSession: (elapsedSeconds: number) => void;
   resumeSession: () => void;
@@ -89,11 +93,21 @@ export const useSessionStore = create<SessionState>()(
         customMinutes: 45,
       },
       activeSession: null,
-      history: sessions,
+      history: [],
       preferences: defaultPreferences,
+      syncError: null,
       spotifyConnected: false,
       spotifyPremium: false,
       setDraft: (draft) => set((state) => ({ draft: { ...state.draft, ...draft } })),
+      loadRemoteData: async () => {
+        try {
+          const [history, preferences] = await Promise.all([loadFocusSessions(), loadPreferences()]);
+          set({ history, preferences, syncError: null });
+        } catch (error) {
+          set({ syncError: error instanceof Error ? error.message : 'Unable to sync MelodyDesk data.' });
+        }
+      },
+      clearUserData: () => set({ activeSession: null, history: [], preferences: defaultPreferences, syncError: null }),
       startSession: () => {
         const { draft, preferences } = get();
         const plannedSeconds = getPlannedSeconds(draft.mode, draft.customMinutes, preferences);
@@ -172,12 +186,22 @@ export const useSessionStore = create<SessionState>()(
           completedMinutes,
           status,
           completedAt: 'Today',
+          completedAtIso: new Date().toISOString(),
         };
 
         set({ activeSession: null, history: [session, ...history] });
+        void saveFocusSession(session).catch((error: unknown) => {
+          set({ syncError: error instanceof Error ? error.message : 'Unable to save this focus session.' });
+        });
       },
       updatePreferences: (preferences) => {
-        set((state) => ({ preferences: { ...state.preferences, ...preferences } }));
+        set((state) => {
+          const nextPreferences = { ...state.preferences, ...preferences };
+          void savePreferences(nextPreferences).catch((error: unknown) => {
+            useSessionStore.setState({ syncError: error instanceof Error ? error.message : 'Unable to save preferences.' });
+          });
+          return { preferences: nextPreferences };
+        });
       },
       toggleSpotifyConnection: () => set((state) => ({ spotifyConnected: !state.spotifyConnected })),
       toggleSpotifyPremium: () => set((state) => ({ spotifyPremium: !state.spotifyPremium })),
@@ -187,7 +211,6 @@ export const useSessionStore = create<SessionState>()(
       partialize: (state) => ({
         draft: state.draft,
         activeSession: state.activeSession,
-        history: state.history,
         preferences: state.preferences,
         spotifyConnected: state.spotifyConnected,
         spotifyPremium: state.spotifyPremium,

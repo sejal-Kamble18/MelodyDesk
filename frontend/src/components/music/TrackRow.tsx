@@ -23,14 +23,14 @@ export const TrackRow = ({ track, index, queue }: TrackRowProps) => {
         type="button"
       >
         <span className="hidden w-6 text-center text-sm text-zinc-500 sm:block">{active && isPlaying ? '•' : index}</span>
-        <Artwork label={track.artwork} palette={track.palette} className="h-12 w-12 rounded-xl" />
+        <Artwork imageUrl={track.artworkUrl} label={track.artwork} palette={track.palette} className="h-12 w-12 rounded-xl" />
         <span className="absolute left-9 top-1/2 hidden -translate-y-1/2 rounded-full bg-black/65 p-1 text-white group-hover:block">
           <Play size={14} fill="currentColor" />
         </span>
       </button>
       <div className="min-w-0">
         <p className={`truncate text-sm font-bold ${active ? 'text-[#22e26b]' : 'text-white'}`}>{track.title}</p>
-        <p className="truncate text-xs text-zinc-400">{track.artist} · {track.album}</p>
+        <p className="truncate text-xs text-zinc-400">{track.artist} - {track.playable ? 'Playable preview' : track.album}</p>
       </div>
       <div className="flex items-center gap-2">
         <span className="hidden text-xs text-zinc-500 sm:inline">{track.durationLabel}</span>

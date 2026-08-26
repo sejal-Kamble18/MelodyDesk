@@ -6,9 +6,12 @@ import { AuthShell } from '../components/auth/AuthShell';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { forgotPasswordSchema } from '../lib/validators';
+import { useAuthStore } from '../store/authStore';
 
 export const ForgotPasswordPage = () => {
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { sendPasswordReset, isLoading } = useAuthStore();
 
   const {
     register,
@@ -16,8 +19,14 @@ export const ForgotPasswordPage = () => {
     formState: { errors, isSubmitting },
   } = useForm<{ email: string }>({ resolver: zodResolver(forgotPasswordSchema) });
 
-  const onSubmit = () => {
-    setSent(true);
+  const onSubmit = async (values: { email: string }) => {
+    setError(null);
+    try {
+      await sendPasswordReset(values.email);
+      setSent(true);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Unable to send the reset link.');
+    }
   };
 
   return (
@@ -37,8 +46,9 @@ export const ForgotPasswordPage = () => {
       ) : (
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <Input label="Email" type="email" placeholder="name@example.com" autoComplete="email" error={errors.email?.message} {...register('email')} />
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Sending...' : 'Send reset link'}
+          {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+          <Button type="submit" className="w-full" disabled={isSubmitting || isLoading}>
+            {isSubmitting || isLoading ? 'Sending...' : 'Send reset link'}
           </Button>
         </form>
       )}

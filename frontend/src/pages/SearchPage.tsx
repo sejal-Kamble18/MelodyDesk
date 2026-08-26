@@ -6,16 +6,19 @@ import { PlaylistCard } from '../components/music/PlaylistCard';
 import { SearchInput } from '../components/music/SearchInput';
 import { TrackRow } from '../components/music/TrackRow';
 import { Button } from '../components/ui/Button';
-import { searchMusic } from '../services/musicMock';
+import { searchMusic, toDemoTrack, type DemoTrack } from '../services/musicMock';
+import { searchProviderTracks } from '../services/musicService';
 
 const categories = ['all', 'tracks', 'artists', 'albums', 'playlists'] as const;
-const popularSearches = ['coding', 'piano', 'rain', 'ambient', 'electronic'];
+const popularSearches = ['Taylor Swift', 'Shakira', 'Arijit Singh', 'old Hindi songs', 'new songs'];
 
 export const SearchPage = () => {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [category, setCategory] = useState<(typeof categories)[number]>('all');
   const [recent, setRecent] = useState<string[]>(['lo-fi', 'deep work']);
+  const [providerTracks, setProviderTracks] = useState<DemoTrack[]>([]);
+  const [providerStatus, setProviderStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setDebouncedQuery(query), 250);
@@ -23,13 +26,39 @@ export const SearchPage = () => {
   }, [query]);
 
   const results = useMemo(() => searchMusic(debouncedQuery, category), [category, debouncedQuery]);
-  const hasResults = results.tracks.length || results.playlists.length || results.artists.length;
+  const providerSearchEnabled = debouncedQuery.trim().length >= 2 && (category === 'all' || category === 'tracks');
+  const visibleProviderTracks = providerSearchEnabled ? providerTracks : [];
+  const tracks = category === 'all' || category === 'tracks' ? [...visibleProviderTracks, ...results.tracks] : results.tracks;
+  const hasResults = tracks.length || results.playlists.length || results.artists.length;
   const chooseSearch = (value: string) => {
     setQuery(value);
     if (value.trim().length > 1) {
       setRecent((items) => [value.trim(), ...items.filter((item) => item !== value.trim())].slice(0, 5));
     }
   };
+
+  useEffect(() => {
+    if (!providerSearchEnabled) {
+      return undefined;
+    }
+
+    let cancelled = false;
+    void searchProviderTracks(debouncedQuery, 10)
+      .then((result) => {
+        if (cancelled) return;
+        setProviderTracks(result.tracks.map(toDemoTrack));
+        setProviderStatus(result.tracks.length ? result.attribution ?? null : 'No playable previews found. Try artist, song, or album names.');
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        setProviderTracks([]);
+        setProviderStatus(error instanceof Error ? error.message : 'Music provider search is unavailable.');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedQuery, providerSearchEnabled]);
 
   return (
     <div className="space-y-8">
@@ -66,12 +95,14 @@ export const SearchPage = () => {
         </div>
       ) : null}
 
-      {debouncedQuery && !hasResults ? <EmptyState title="No results" description="Try a mood, activity, artist, playlist, or album name from the demo catalog." /> : null}
+      {providerSearchEnabled && providerStatus ? <p className="text-sm text-zinc-400">{providerStatus}</p> : null}
 
-      {results.tracks.length ? (
+      {debouncedQuery && !hasResults ? <EmptyState title="No results" description="Try a mood, activity, artist, playlist, or album name from the catalog." /> : null}
+
+      {tracks.length ? (
         <section className="rounded-[24px] border border-white/8 bg-[#111113] p-5">
           <h2 className="text-2xl font-black text-white">Tracks</h2>
-          <div className="mt-4 space-y-1">{results.tracks.map((track, index) => <TrackRow key={track.id} index={index + 1} queue={results.tracks} track={track} />)}</div>
+          <div className="mt-4 space-y-1">{tracks.map((track, index) => <TrackRow key={track.id} index={index + 1} queue={tracks} track={track} />)}</div>
         </section>
       ) : null}
       {results.playlists.length ? (
