@@ -1,16 +1,76 @@
-# MelodyDesk
+# MelodyDesk 🎵
 
-<<<<<<< HEAD
-MelodyDesk is an AI-powered focus, study, and music workspace for students and makers who want one place to plan focus blocks, run Pomodoro or free sessions, search music, and work alongside lightweight study rooms.
+> **Music for focused moments.**
 
-## Features
+MelodyDesk is an AI-powered focus, study, and music workspace designed for students, developers, creators, and anyone who wants to stay productive without constantly switching between productivity and music applications.
 
-- Supabase-only auth: sign up, email verification, login, session restore, logout, and password reset.
-- Focus sessions: Pomodoro, custom duration, free focus, pause/resume, finish early, and saved history.
-- AI Focus DJ: turns activity, mood, duration, and preferred genres into a provider search query.
-- Music provider layer: searches real provider catalogs and only marks tracks playable when an authorized URL is available.
-- Study rooms: create by code, join by code, leave, member list, shared focus state, capacity limit, and realtime updates.
-- Dashboard, discovery, search, active session, profile, and settings screens.
+It combines customizable focus sessions, Pomodoro timers, music discovery, AI-powered focus recommendations, productivity analytics, and collaborative study rooms in one workspace.
+
+---
+
+## ✨ What is MelodyDesk?
+
+MelodyDesk solves a simple problem:
+
+> **People often switch between multiple apps while trying to focus.**
+
+A user may need one application for a timer, another for music, another for productivity tracking, and another for studying with friends.
+
+MelodyDesk brings these experiences together in one focused workspace.
+
+Users can:
+
+- Start a Pomodoro or custom focus session
+- Run free-focus sessions
+- Search and explore music
+- Get AI-powered music recommendations
+- Track focus history and productivity
+- Create or join study rooms
+- Study with friends in real time
+- Save favorite tracks
+- Manage personal preferences
+- Continue sessions across devices through cloud-backed data
+
+---
+
+# 🚀 Features
+
+## 🎯 Focus Sessions
+
+MelodyDesk supports multiple focus modes:
+
+- Pomodoro
+- Custom duration
+- Free focus
+- Pause and resume
+- Finish early
+- Focus and break phases
+- Session activity selection
+- Session notes
+- Session history
+
+The timer is designed around timestamp-based state rather than relying only on decrementing counters, which helps keep elapsed time accurate when the browser is throttled or temporarily inactive.
+
+---
+
+## 🤖 AI Focus DJ
+
+The **AI Focus DJ** is MelodyDesk's main AI capability.
+
+Instead of adding a generic chatbot, the AI is directly connected to the productivity workflow.
+
+The user provides information such as:
+
+- Activity
+- Mood
+- Session duration
+- Preferred genres
+
+Example:
+Activity: Coding
+Mood: Tired
+Duration: 60 minutes
+Preferred genres: Ambient, Electronic
 
 ## Architecture
 
@@ -18,6 +78,26 @@ MelodyDesk is an AI-powered focus, study, and music workspace for students and m
 - Backend: FastAPI for server-only AI and music operations.
 - Data: Supabase Auth, Postgres, RLS policies, RPC functions, and Realtime.
 
+                           MelodyDesk
+                               │
+                  ┌────────────┴────────────┐
+                  │                         │
+             Web Frontend              FastAPI Backend
+                  │                         │
+        ┌─────────┼─────────┐        ┌──────┴───────┐
+        │         │         │        │              │
+      Auth      Focus     Music     AI         Music APIs
+        │         │         │        │              │
+        └─────────┴─────────┴────────┴──────────────┘
+                               │
+                            Supabase
+                               │
+                ┌──────────────┼──────────────┐
+                │              │              │
+               Auth        PostgreSQL       Realtime
+                              + RLS
+
+          
 ## Environment
 
 Frontend variables:
@@ -147,15 +227,14 @@ cd frontend
 npm install
 npm run dev
 
-## Environment
+## Environment Setup
 
 VITE_SUPABASE_URL=
+
 VITE_SUPABASE_PUBLISHABLE_KEY=
+
 VITE_API_BASE_URL=
 
-## Known limitations
-
-Mainstream music providers may expose previews or provider-controlled playback rather than unrestricted full-track streaming.
 
 ## Future
 
@@ -163,4 +242,6 @@ Mainstream music providers may expose previews or provider-controlled playback r
 - Chrome extension
 - advanced room collaboration
 - personalized AI recommendations
->>>>>>> origin/main
+
+
+_This is Capstone Project for FlyRank_
