@@ -1,5 +1,6 @@
 # MelodyDesk
 
+<<<<<<< HEAD
 MelodyDesk is an AI-powered focus, study, and music workspace for students and makers who want one place to plan focus blocks, run Pomodoro or free sessions, search music, and work alongside lightweight study rooms.
 
 ## Features
@@ -97,3 +98,69 @@ Deploy the frontend to a static host that supports Vite builds. Deploy the FastA
 - Add user-authorized Spotify or Apple Music playback.
 - Add richer room presence and shared session progress.
 - Add end-to-end tests for auth redirects and study-room realtime behavior.
+=======
+AI-powered focus workspace for students and professionals.
+
+## Features
+
+- AI Focus DJ
+- Pomodoro/custom focus sessions
+- Focus music and ambient audio
+- Collaborative study rooms
+- Productivity analytics
+- Goals and history
+- Supabase authentication
+
+## Tech Stack
+
+React
+TypeScript
+Vite
+Tailwind CSS
+Supabase
+FastAPI
+LLM API
+
+## Architecture
+
+Frontend
+   ↓
+Supabase Auth / Database
+   ↓
+FastAPI
+   ↓
+AI provider
+
+## AI
+
+AI Focus DJ analyzes:
+- activity
+- mood
+- duration
+- preferred genres
+
+and recommends an appropriate focus experience.
+
+## Run
+
+cd frontend
+npm install
+npm run dev
+
+## Environment
+
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+VITE_API_BASE_URL=
+
+## Known limitations
+
+Mainstream music providers may expose previews or provider-controlled playback rather than unrestricted full-track streaming.
+
+## Future
+
+- richer licensed music providers
+- Chrome extension
+- advanced room collaboration
+- personalized AI recommendations
+>>>>>>> origin/main
