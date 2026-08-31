@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Sparkles } from 'lucide-react';
 import { activities, playlists } from '../../data/melodydesk';
+import { getFocusDjRecommendation, type FocusDjRecommendation } from '../../services/aiService';
 import { useSessionStore } from '../../store/sessionStore';
 import type { MusicSource, SessionMode } from '../../types/product';
 import { ActivityCard } from './ActivityCard';
@@ -21,10 +24,35 @@ const musicSources: Array<{ id: MusicSource; label: string; description: string 
 export const SessionSetup = () => {
   const navigate = useNavigate();
   const { draft, setDraft, startSession } = useSessionStore();
+  const [mood, setMood] = useState('focused');
+  const [recommendation, setRecommendation] = useState<FocusDjRecommendation | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const selectedActivity = useMemo(() => activities.find((activity) => activity.id === draft.activity) ?? activities[0], [draft.activity]);
+  const durationMinutes = draft.mode === 'free' ? 60 : draft.mode === 'custom' ? draft.customMinutes : 25;
 
   const handleStart = () => {
     startSession();
     navigate('/focus/active');
+  };
+
+  const askFocusDj = async () => {
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const next = await getFocusDjRecommendation({
+        activity: draft.activity === 'custom' ? draft.customActivityName || 'custom focus' : selectedActivity.name,
+        mood,
+        duration_minutes: durationMinutes,
+        preferred_genres: selectedActivity.genres,
+      });
+      setRecommendation(next);
+      setDraft({ playlistName: next.query, musicSource: 'spotify' });
+    } catch (error) {
+      setAiError(error instanceof Error ? error.message : 'Focus DJ is unavailable.');
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   return (
@@ -107,19 +135,39 @@ export const SessionSetup = () => {
             <span className="mt-2 block text-sm text-slate-400">{draft.customMinutes} minutes</span>
           </label>
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-300">Playlist or sound</span>
-            <select
+            <span className="mb-2 block text-sm font-medium text-slate-300">Playlist, sound, or provider query</span>
+            <input
               className="h-12 w-full rounded-md border border-white/10 bg-[#121212] px-4 text-sm text-white outline-none focus:border-[#1ed760]/70"
+              list="melodydesk-playlists"
               onChange={(event) => setDraft({ playlistName: event.target.value })}
               value={draft.playlistName}
-            >
+            />
+            <datalist id="melodydesk-playlists">
               {playlists.map((playlist) => (
-                <option key={playlist.id} value={playlist.title}>
-                  {playlist.title}
-                </option>
+                <option key={playlist.id} value={playlist.title} />
               ))}
-            </select>
+            </datalist>
           </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-slate-300">Mood</span>
+            <input
+              className="h-12 w-full rounded-md border border-white/10 bg-[#121212] px-4 text-sm text-white outline-none focus:border-[#1ed760]/70"
+              onChange={(event) => setMood(event.target.value)}
+              placeholder="focused, calm, tired, energized"
+              value={mood}
+            />
+          </label>
+          <Button className="w-full" disabled={aiLoading} onClick={() => void askFocusDj()} type="button" variant="secondary">
+            <Sparkles size={17} /> {aiLoading ? 'Tuning...' : 'Ask Focus DJ'}
+          </Button>
+          {recommendation ? (
+            <div className="rounded-lg border border-[#1ed760]/20 bg-[#1ed760]/10 p-4 text-sm text-slate-200">
+              <p className="font-bold text-white">{recommendation.query}</p>
+              <p className="mt-1 text-slate-300">Energy: {recommendation.energy}</p>
+              <p className="mt-2 text-slate-400">{recommendation.reason}</p>
+            </div>
+          ) : null}
+          {aiError ? <p className="text-sm text-rose-300">{aiError}</p> : null}
           <div className="rounded-lg bg-black/35 p-4 text-sm text-slate-300">
             External catalog content is represented through provider references only. Native sounds remain available when no music service is connected.
           </div>

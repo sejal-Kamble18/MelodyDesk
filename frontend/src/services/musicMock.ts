@@ -65,6 +65,7 @@ const createDemoTrack = (
   mood,
   streamUrl,
   playable: true,
+  playbackKind: 'full',
   attribution: 'Royalty-free SoundHelix demo stream.',
 });
 
@@ -139,7 +140,7 @@ export const toDemoTrack = (track: ProviderTrack): DemoTrack => ({
   album: track.album || track.provider,
   artwork: track.artworkUrl ? 'AP' : track.title.slice(0, 2).toUpperCase(),
   palette: 'from-rose-100 via-fuchsia-500 to-zinc-950',
-  mood: track.attribution || 'provider result',
+  mood: track.playbackKind === 'metadata' ? 'metadata only' : track.attribution || 'provider result',
   duration: track.durationSeconds,
   durationLabel: formatDuration(track.durationSeconds),
 });

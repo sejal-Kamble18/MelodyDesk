@@ -28,6 +28,7 @@ export const StudyRoomsPage = () => {
   const [room, setRoom] = useState<StudyRoom | null>(null);
   const [members, setMembers] = useState<StudyRoomMember[]>([]);
   const [roomName, setRoomName] = useState('Deep Work Room');
+  const [roomCapacity, setRoomCapacity] = useState(10);
   const [joinCode, setJoinCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -90,9 +91,17 @@ export const StudyRoomsPage = () => {
         <div className="grid gap-4 lg:grid-cols-2">
           <section className="rounded-[22px] border border-white/8 bg-[#111113] p-5">
             <h2 className="text-xl font-black text-white">Create room</h2>
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_110px_auto]">
               <Input value={roomName} onChange={(event) => setRoomName(event.target.value)} aria-label="Room name" />
-              <Button disabled={loading} onClick={() => void run(async () => enterRoom(await createStudyRoom(roomName, displayName)))}>
+              <Input
+                aria-label="Room capacity"
+                max={50}
+                min={2}
+                onChange={(event) => setRoomCapacity(Number(event.target.value))}
+                type="number"
+                value={roomCapacity}
+              />
+              <Button disabled={loading} onClick={() => void run(async () => enterRoom(await createStudyRoom(roomName, displayName, roomCapacity)))}>
                 <Plus size={18} /> Create
               </Button>
             </div>
@@ -113,7 +122,7 @@ export const StudyRoomsPage = () => {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="text-3xl font-black text-white">{room.name}</h2>
-                <p className="mt-2 text-sm text-zinc-400">Code <span className="font-mono text-[#22e26b]">{room.code}</span></p>
+                <p className="mt-2 text-sm text-zinc-400">Code <span className="font-mono text-[#22e26b]">{room.code}</span> - {members.length}/{room.max_members} members</p>
               </div>
               <Button variant="secondary" onClick={() => void navigator.clipboard?.writeText(room.code)}>
                 <Copy size={18} /> Copy

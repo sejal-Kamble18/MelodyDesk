@@ -48,7 +48,7 @@ export const usePlayerStore = create<PlayerState>()(
       playTrack: async (track, queue = get().queue) => {
         set({ error: null, isLoading: !track.streamUrl });
         if (!track.playable && !track.streamUrl) {
-          set({ currentTrack: track, queue, isPlaying: false, isLoading: false, error: 'This catalog item is metadata-only. Search for a playable preview.' });
+          set({ currentTrack: track, queue, isPlaying: false, isLoading: false, error: 'This catalog item is metadata-only. Full playback needs an authorized provider session.' });
           return;
         }
         try {

@@ -13,6 +13,7 @@ interface TrackRowProps {
 export const TrackRow = ({ track, index, queue }: TrackRowProps) => {
   const { currentTrack, isPlaying, likedTrackIds, playTrack, toggleLike } = usePlayerStore();
   const active = currentTrack.id === track.id;
+  const playbackLabel = track.playbackKind === 'full' ? 'Playable' : track.playbackKind === 'metadata' ? 'Metadata only' : 'Playable preview';
 
   return (
     <div className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-[14px] px-3 py-3 transition hover:bg-white/[0.06]">
@@ -30,7 +31,7 @@ export const TrackRow = ({ track, index, queue }: TrackRowProps) => {
       </button>
       <div className="min-w-0">
         <p className={`truncate text-sm font-bold ${active ? 'text-[#22e26b]' : 'text-white'}`}>{track.title}</p>
-        <p className="truncate text-xs text-zinc-400">{track.artist} - {track.playable ? 'Playable preview' : track.album}</p>
+        <p className="truncate text-xs text-zinc-400">{track.artist} - {playbackLabel}</p>
       </div>
       <div className="flex items-center gap-2">
         <span className="hidden text-xs text-zinc-500 sm:inline">{track.durationLabel}</span>

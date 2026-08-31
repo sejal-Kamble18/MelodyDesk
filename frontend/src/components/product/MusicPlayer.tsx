@@ -34,6 +34,7 @@ export const MusicPlayer = () => {
     cycleRepeat,
     toggleLike,
   } = usePlayerStore();
+  const playbackLabel = currentTrack.playbackKind === 'full' ? 'Full track' : currentTrack.playbackKind === 'metadata' ? 'Metadata only' : 'Preview';
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -84,7 +85,7 @@ export const MusicPlayer = () => {
         ref={audioRef}
         src={currentTrack.streamUrl}
         onEnded={next}
-        onError={() => usePlayerStore.setState({ isPlaying: false, isLoading: false, error: 'Audio preview failed to load for this track.' })}
+        onError={() => usePlayerStore.setState({ isPlaying: false, isLoading: false, error: 'Audio failed to load for this track.' })}
         onLoadedMetadata={(event) => usePlayerStore.setState({ isLoading: false, progress: event.currentTarget.currentTime })}
         onTimeUpdate={(event) => setProgress(event.currentTarget.currentTime)}
       />
@@ -93,7 +94,7 @@ export const MusicPlayer = () => {
           <Artwork imageUrl={currentTrack.artworkUrl} label={currentTrack.artwork} palette={currentTrack.palette} className="h-14 w-14 shrink-0 rounded-[14px]" />
           <div className="min-w-0">
             <p className="truncate text-sm font-bold text-white">{currentTrack.title}</p>
-            <p className="truncate text-xs text-zinc-400">{currentTrack.artist} - {currentTrack.playable ? 'Preview' : currentTrack.mood}</p>
+            <p className="truncate text-xs text-zinc-400">{currentTrack.artist} - {playbackLabel}</p>
           </div>
           <IconButton aria-label={likedTrackIds.includes(currentTrack.id) ? 'Unlike current track' : 'Like current track'} active={likedTrackIds.includes(currentTrack.id)} onClick={() => toggleLike(currentTrack.id)}>
             <Heart size={18} fill={likedTrackIds.includes(currentTrack.id) ? 'currentColor' : 'none'} />
@@ -177,7 +178,7 @@ export const MusicPlayer = () => {
       </div>
       {isLoading || error ? (
         <p className={`mx-auto mt-2 max-w-[1800px] text-center text-xs ${error ? 'text-rose-300' : 'text-zinc-400'}`}>
-          {error || 'Loading audio preview...'}
+          {error || 'Loading audio...'}
         </p>
       ) : null}
     </div>

@@ -7,6 +7,7 @@ export type StudyRoom = {
   code: string;
   name: string;
   created_by: string;
+  max_members: number;
   current_phase: RoomPhase;
   is_running: boolean;
   planned_seconds: number;
@@ -25,9 +26,9 @@ const requireSupabase = () => {
   if (!isSupabaseConfigured) throw new Error('Supabase is not configured.');
 };
 
-export const createStudyRoom = async (name: string, displayName: string) => {
+export const createStudyRoom = async (name: string, displayName: string, roomCapacity = 10) => {
   requireSupabase();
-  const { data, error } = await supabase.rpc('create_study_room', { room_name: name, display_name: displayName });
+  const { data, error } = await supabase.rpc('create_study_room', { room_name: name, display_name: displayName, room_capacity: roomCapacity });
   if (error) throw new Error(error.message, { cause: error });
   return data as StudyRoom;
 };

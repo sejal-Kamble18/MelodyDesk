@@ -1,6 +1,6 @@
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
-export type MusicProviderId = 'apple-preview' | 'demo';
+export type MusicProviderId = 'apple-preview' | 'spotify-catalog' | 'demo';
 
 export type ProviderTrack = {
   id: string;
@@ -14,6 +14,7 @@ export type ProviderTrack = {
   streamUrl?: string;
   attribution?: string;
   playable: boolean;
+  playbackKind?: 'full' | 'preview' | 'metadata';
 };
 
 export type MusicSearchResult = {
